@@ -1,0 +1,15 @@
+<form action="" method="post">
+    {% csrf_token %}
+    <input type="text" name="username" placeholder="username" required>
+    <input type="email" name="email" placeholder="email" required>
+    <input type="password" name="password" placeholder="password" required>
+    <button type="submit">Rejestracja</button>
+
+    {% if error_message %}
+        <p>{{ error_message }}</p>
+    {% endif %}
+
+    {% if success_message %}
+        <p>{{ success_message }}</p>
+    {% endif %}
+</form>
