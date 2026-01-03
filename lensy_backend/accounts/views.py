@@ -51,3 +51,9 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect("login")
+
+
+@login_required
+def profile_view(request):
+    user = request.user
+    return render(request, "accounts/profile.html", {"profile_user": user})
