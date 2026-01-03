@@ -1,0 +1,59 @@
+body {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+.app-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.navbar {
+    background-color: #1a1a1a;
+}
+
+.card {
+    background-color: #1e1e1e;
+    border: 1px solid #2a2a2a;
+}
+
+.form-control {
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+    border: 1px solid #444;
+}
+
+.form-control:focus {
+    background-color: #2a2a2a;
+    color: #ffffff;
+    border-color: #666;
+    box-shadow: none;
+}
+
+a {
+    color: #8ab4f8;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.btn-outline-danger {
+    border-color: #ff6b6b;
+    color: #ff6b6b;
+}
+
+.btn-outline-danger:hover {
+    background-color: #ff6b6b;
+    color: #000;
+}
+
+p,
+h1, h2, h3, h4, h5, h6,
+span,
+label,
+li,
+small {
+    color: #e0e0e0;
+}
