@@ -17,7 +17,7 @@ class CustomUser(AbstractUser):
         ('female', 'Kobieta')
     )
 
-    gender = models.CharField(max_length=20, choices=GENDER_CHOICES, default='')
+    gender = models.CharField(max_length=20, choices=GENDER_CHOICES, blank=True, null=True)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='user')
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
     bio = models.TextField(blank=True)
