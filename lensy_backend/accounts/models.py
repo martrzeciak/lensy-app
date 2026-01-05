@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db.models.signals import pre_save, post_delete
+from django.dispatch import receiver
+import os
 
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
@@ -9,6 +12,12 @@ class CustomUser(AbstractUser):
         ('admin', 'admin')
     )
 
+    GENDER_CHOICES = (
+        ('male', 'Mężczyzna'),
+        ('female', 'Kobieta')
+    )
+
+    gender = models.CharField(max_length=20, choices=GENDER_CHOICES, default='')
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='user')
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
     bio = models.TextField(blank=True)
@@ -20,3 +29,27 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.username
+    
+    
+@receiver(pre_save, sender=CustomUser)
+def delete_old_avatar_on_change(sender, instance, **kwargs):
+    if not instance.pk:
+        return
+
+    try:
+        old_avatar = CustomUser.objects.get(pk=instance.pk).avatar
+    except CustomUser.DoesNotExist:
+        return
+
+    new_avatar = instance.avatar
+
+    if old_avatar and old_avatar != new_avatar:
+        if old_avatar.storage.exists(old_avatar.name):
+            old_avatar.storage.delete(old_avatar.name)
+
+
+@receiver(post_delete, sender=CustomUser)
+def delete_avatar_on_user_delete(sender, instance, **kwargs):
+    if instance.avatar:
+        if instance.avatar.storage.exists(instance.avatar.name):
+            instance.avatar.storage.delete(instance.avatar.name)

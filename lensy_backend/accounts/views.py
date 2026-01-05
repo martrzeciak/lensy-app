@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
+from .forms import EditProfileForm
 
 User = get_user_model()
 
@@ -57,3 +58,20 @@ def logout_view(request):
 def profile_view(request):
     user = request.user
     return render(request, "accounts/profile.html", {"profile_user": user})
+
+
+@login_required
+def edit_profile_view(request):
+    user = request.user
+
+    if request.method == 'POST':
+        form = EditProfileForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')
+    else:
+        form = EditProfileForm(instance=user)
+
+    return render(request, 'accounts/edit_profile.html', {
+        'form': form
+    })
