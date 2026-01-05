@@ -56,9 +56,10 @@ def logout_view(request):
 
 @login_required
 def profile_view(request):
-    user = request.user
-    return render(request, "accounts/profile.html", {"profile_user": user})
+    profile_user = request.user
+    posts = profile_user.posts.all().order_by('-created_at')
 
+    return render(request, 'accounts/profile.html', {'profile_user': profile_user, 'posts': posts})
 
 @login_required
 def edit_profile_view(request):

@@ -42,5 +42,28 @@
 {% endif %}
     </div>
 
+<!-- Tymczasowo -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const showBtn = document.getElementById('showPostFormBtn');
+    const form = document.getElementById('postForm');
+    const cancelBtn = document.getElementById('cancelPostBtn');
+
+    if (showBtn && form && cancelBtn) {
+        showBtn.addEventListener('click', () => {
+            showBtn.style.display = 'none';
+            form.style.display = 'block';
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            form.style.display = 'none';
+            showBtn.style.display = 'inline-block';
+        });
+    }
+
+});
+</script>
+
 </body>
 </html>

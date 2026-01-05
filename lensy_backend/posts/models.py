@@ -3,9 +3,10 @@ from django.conf import settings
 
 User = settings.AUTH_USER_MODEL
 
+
 class Post(models.Model):
     user = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='posts'
     )

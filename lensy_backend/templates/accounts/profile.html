@@ -1,63 +1,97 @@
 {% extends "base.html" %}
 {% block title %}Profil{% endblock %}
-
 {% block content %}
 <div class="card p-4">
 
+    <!-- ================= GÓRA PROFILU ================= -->
     <div class="d-flex gap-4 mb-4">
 
-        <div>
+        <div class="text-center">
             {% if profile_user.avatar %}
-                <img src="{{ profile_user.avatar.url }}" class="rounded-circle" width="120" height="120">
+                <img src="{{ profile_user.avatar.url }}"
+                     class="rounded-circle mb-2"
+                     width="120"
+                     height="120">
             {% else %}
-                <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center"
+                <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mb-2"
                      style="width:120px;height:120px;">
-                    0
+                    <span class="text-light">Brak</span>
                 </div>
             {% endif %}
 
-            <div class="mt-2 text-center">
-
-                <a href="{% url 'edit_profile' %}" class="btn btn-sm btn-outline-light mt-2">
-                    Edytuj profil
-                 </a>
-
-            </div>
-
+            <a href="{% url 'edit_profile' %}"
+               class="btn btn-sm btn-outline-light w-100">
+                Edytuj profil
+            </a>
         </div>
 
         <div>
-            <h3>{{ profile_user.username }}</h3>
-            <p class="mb-1">{{ profile_user.first_name }} {{ profile_user.last_name }}</p>
+            <h3 class="text-light">{{ profile_user.username }}</h3>
+            <p class="text-light mb-1">
+                {{ profile_user.first_name }} {{ profile_user.last_name }}
+            </p>
 
             {% if profile_user.bio %}
-                <p class="text-muted">{{ profile_user.bio }}</p>
+                <p class="text-light">{{ profile_user.bio }}</p>
             {% else %}
                 <p class="text-muted fst-italic">Brak opisu</p>
             {% endif %}
-
         </div>
     </div>
 
-
-    <div class="d-flex gap-4 mb-4">
-        <div><strong>0</strong> postów</div>
+    <!-- ================= STATYSTYKI ================= -->
+    <div class="d-flex gap-4 mb-4 text-light">
+        <div><strong>{{ posts.count }}</strong> postów</div>
         <div><strong>{{ profile_user.followers_count }}</strong> obserwujących</div>
         <div><strong>{{ profile_user.following_count }}</strong> obserwowanych</div>
     </div>
 
     <hr>
 
+    <!-- ================= DODAWANIE POSTA ================= -->
     <div class="mb-4">
-        <a href="#" class="btn btn-outline-primary">
+        <button id="showPostFormBtn" class="btn btn-outline-primary mb-3">
             + Dodaj zdjęcie
-        </a>
+        </button>
+
+        <form id="postForm"
+              method="post"
+              action="{% url 'add_post' %}"
+              enctype="multipart/form-data"
+              style="display:none"
+              class="card p-3">
+
+            {% csrf_token %}
+
+            <input type="file"
+                   name="image"
+                   accept="image/*"
+                   class="form-control mb-2"
+                   required>
+
+            <textarea name="description"
+                      class="form-control mb-2"
+                      rows="3"
+                      placeholder="Opis (opcjonalnie)"></textarea>
+
+            <button class="btn btn-success mb-2">
+                Opublikuj
+            </button>
+
+            <button type="button"
+                    id="cancelPostBtn"
+                    class="btn btn-outline-secondary">
+                Anuluj
+            </button>
+        </form>
     </div>
 
+    <!-- ================= POSTY ================= -->
     <div class="row g-2">
         {% for post in posts %}
             <div class="col-4">
-                <img src="{{ post.image.url }}" class="img-fluid rounded">
+                <img src="{{ post.image.url }}"
+                     class="img-fluid rounded">
             </div>
         {% empty %}
             <div class="col-12 text-center text-muted">

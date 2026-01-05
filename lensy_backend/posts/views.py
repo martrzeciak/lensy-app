@@ -1,12 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
+from .models import Post
 
 @login_required
-def profile_view(request):
-    profile_user = request.user
-    posts = profile_user.posts.all().order_by('-created_at')
-
-    return render(request, 'accounts/profile.html', {
-        'profile_user': profile_user,
-        'posts': posts
-    })
+def add_post(request):
+    if request.method == 'POST' and request.FILES.get('image'):
+        Post.objects.create(
+            user=request.user,
+            image=request.FILES['image'],
+            description=request.POST.get('description', '')
+        )
+    return redirect('profile')
