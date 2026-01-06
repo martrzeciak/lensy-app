@@ -31,7 +31,7 @@ env\Scripts\activate
 ### Option B: Linux/macOS
 
 ```powershell
-source venv/bin/activate
+source env/bin/activate
 ```
 
 ---
