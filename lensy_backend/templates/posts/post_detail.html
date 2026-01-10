@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="row">
+
+    <!-- ZDJĘCIE -->
+    <div class="col-md-7 text-center">
+        <img src="{{ post.image.url }}" class="img-fluid rounded">
+    </div>
+
+    <!-- PANEL BOCZNY -->
+    <div class="col-md-5">
+
+        <h5>{{ post.author.username }}</h5>
+        <p>{{ post.description }}</p>
+
+        <!-- HASHTAGI -->
+        <div class="mb-2">
+            {% for tag in post.hashtags.all %}
+                <span class="badge bg-secondary">#{{ tag.name }}</span>
+            {% endfor %}
+        </div>
+
+        <!-- LIKE -->
+        <form method="post" action="{% url 'toggle_like' post.id %}">
+            {% csrf_token %}
+            <button class="btn btn-sm {% if is_liked %}btn-danger{% else %}btn-outline-danger{% endif %}">
+                ❤️ {{ post.likes.count }}
+            </button>
+        </form>
+
+        <hr>
+
+        <!-- KOMENTARZE -->
+        <div style="max-height:300px; overflow-y:auto;">
+            {% for comment in post.comments.all %}
+                <p>
+                    <strong>{{ comment.user.username }}</strong>
+                    {{ comment.content }}
+                </p>
+            {% empty %}
+                <p class="text-muted">Brak komentarzy</p>
+            {% endfor %}
+        </div>
+
+        <!-- DODAJ KOMENTARZ -->
+        <form method="post" action="{% url 'add_comment' post.id %}">
+            {% csrf_token %}
+            <textarea name="content"
+                      class="form-control mb-2"
+                      rows="2"
+                      placeholder="Dodaj komentarz..."></textarea>
+            <button class="btn btn-primary btn-sm">Dodaj</button>
+        </form>
+
+        <hr>
+
+        <!-- NAWIGACJA -->
+        <div class="d-flex justify-content-between">
+            {% if previous_post %}
+                <a href="{{ previous_post.get_absolute_url }}">← Poprzedni</a>
+            {% endif %}
+            {% if next_post %}
+                <a href="{{ next_post.get_absolute_url }}">Następny →</a>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
