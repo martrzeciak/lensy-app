@@ -2,7 +2,11 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models.signals import pre_save, post_delete
 from django.dispatch import receiver
+from django.conf import settings
 import os
+
+User = settings.AUTH_USER_MODEL
+
 
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
@@ -29,7 +33,24 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.username
-    
+
+
+
+class Follow(models.Model):
+    follower = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='following'
+    )
+    following = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='followers'
+    )
+
+    class Meta:
+        unique_together = ('follower', 'following')
+
     
 @receiver(pre_save, sender=CustomUser)
 def delete_old_avatar_on_change(sender, instance, **kwargs):

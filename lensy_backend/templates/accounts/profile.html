@@ -90,8 +90,9 @@
     <div class="row g-2">
         {% for post in posts %}
             <div class="col-4">
-                <img src="{{ post.image.url }}"
-                     class="img-fluid rounded">
+                <a href="{{ post.get_absolute_url }}">
+                    <img src="{{ post.image.url }}" class="img-fluid rounded">
+                </a>
             </div>
         {% empty %}
             <div class="col-12 text-center text-muted">
