@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
 from .forms import EditProfileForm
+from .models import Follow
 
 User = get_user_model()
 
@@ -65,7 +66,15 @@ def profile_view(request, username=None):
 
     is_owner = request.user == profile_user
 
-    return render(request, 'accounts/profile.html', {'profile_user': profile_user, 'posts': posts, 'is_owner': is_owner})
+    is_following = False
+    if request.user != profile_user:
+        is_following = Follow.objects.filter(
+            follower=request.user,
+            following=profile_user
+        ).exists()
+
+    return render(request, 'accounts/profile.html', {'profile_user': profile_user, 'posts': posts, 
+                                                     'is_owner': is_owner, 'is_following': is_following,})
 
 @login_required
 def edit_profile_view(request):
@@ -100,3 +109,56 @@ def remove_avatar(request):
         request.user.avatar = None
         request.user.save()
     return redirect('edit_profile')
+
+
+@login_required
+def toggle_follow(request, username):
+    target = get_object_or_404(User, username=username)
+
+    if target == request.user:
+        return redirect('profile')
+
+    follow, created = Follow.objects.get_or_create(
+        follower=request.user,
+        following=target
+    )
+
+    if not created:
+        follow.delete()
+
+    return redirect('user_profile', username=username)
+
+
+@login_required
+def user_list_view(request, username, list_type):
+    user = get_object_or_404(User, username=username)
+
+    if list_type == 'followers':
+        qs = user.followers.select_related('follower')
+        users = [f.follower for f in qs]
+
+        title = "Obserwujący"
+
+    elif list_type == 'following':
+        qs = user.following.select_related('following')
+        users = [f.following for f in qs]
+
+        title = "Obserwowani"
+
+    else:
+        return redirect('profile')
+
+    users = [u for u in users if u != request.user]
+
+    following_ids = set(
+        Follow.objects.filter(
+            follower=request.user,
+            following__in=users
+        ).values_list('following_id', flat=True)
+    )
+
+    return render(request, 'accounts/user_list.html', {
+        'title': title,
+        'users': users,
+        'following_ids': following_ids,
+    })
