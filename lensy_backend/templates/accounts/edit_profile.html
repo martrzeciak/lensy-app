@@ -4,46 +4,102 @@
 {% block content %}
 <div class="card p-4">
 
-    <h4 class="mb-4">Edytuj profil</h4>
+    <h4 class="mb-4 text-center">Edytuj profil</h4>
 
-    <form method="post" enctype="multipart/form-data">
+    <!-- ====== AVATAR ====== -->
+    <div class="row align-items-center mb-4">
+
+        <!-- PODGLĄD -->
+        <div class="col-md-3 text-center">
+            {% if request.user.avatar %}
+                <img src="{{ request.user.avatar.url }}"
+                     class="rounded-circle"
+                     width="120"
+                     height="120">
+            {% else %}
+                <div class="rounded-circle bg-secondary d-flex
+                            align-items-center justify-content-center"
+                     style="width:120px;height:120px;">
+                    <span class="text-light">Brak</span>
+                </div>
+            {% endif %}
+        </div>
+
+
+        <!-- AKCJE -->
+        <div class="col-md-9">
+
+            <label class="form-label fw-bold">Avatar</label>
+
+            <!-- ZMIEŃ AVATAR -->
+            <form id="avatarForm"
+                  method="post"
+                  action="{% url 'update_avatar' %}"
+                  enctype="multipart/form-data"
+                  class="d-inline">
+                {% csrf_token %}
+
+                <input type="file"
+                       name="avatar"
+                       id="avatarInput"
+                       accept="image/*"
+                       hidden
+                       onchange="document.getElementById('avatarForm').submit()">
+
+                <button type="button"
+                        class="btn btn-sm btn-outline-primary"
+                        onclick="document.getElementById('avatarInput').click()">
+                    Zmień avatar
+                </button>
+            </form>
+
+            <!-- USUŃ AVATAR -->
+            {% if request.user.avatar %}
+                <form method="post"
+                      action="{% url 'remove_avatar' %}"
+                      class="d-inline">
+                    {% csrf_token %}
+                    <button class="btn btn-sm btn-outline-danger">
+                        Usuń avatar
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ====== RESZTA FORMULARZA ====== -->
+    <form method="post">
         {% csrf_token %}
 
-        {{ form.non_field_errors }}
-
-        <div class="mb-3">
-            {{ form.avatar.label_tag }}
-            {{ form.avatar }}
+        <div class="row mb-3">
+            <div class="col-md-4">
+                {{ form.username.label_tag }}
+                {{ form.username }}
+            </div>
+            <div class="col-md-4">
+                {{ form.first_name.label_tag }}
+                {{ form.first_name }}
+            </div>
+            <div class="col-md-4">
+                {{ form.last_name.label_tag }}
+                {{ form.last_name }}
+            </div>
         </div>
 
-        <div class="mb-3">
-            {{ form.username.label_tag }}
-            {{ form.username }}
-        </div>
-
-        <div class="mb-3">
-            {{ form.first_name.label_tag }}
-            {{ form.first_name }}
-        </div>
-
-        <div class="mb-3">
-            {{ form.last_name.label_tag }}
-            {{ form.last_name }}
-        </div>
-
-        <div class="mb-3">
-            {{ form.gender.label_tag }}
-            {{ form.gender }}
-        </div>
-
-        <div class="mb-3">
+        <div class="mb-4">
             {{ form.bio.label_tag }}
             {{ form.bio }}
         </div>
 
-        <button class="btn btn-outline-success w-100">
-            Zapisz zmiany
-        </button>
+        <div class="d-flex gap-2">
+            <button class="btn btn-success w-50">
+                Zapisz
+            </button>
+            <a href="{% url 'profile' %}"
+               class="btn btn-outline-secondary w-50">
+                Anuluj
+            </a>
+        </div>
     </form>
 
 </div>

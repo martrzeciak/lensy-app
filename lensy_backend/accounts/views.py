@@ -66,7 +66,7 @@ def edit_profile_view(request):
     user = request.user
 
     if request.method == 'POST':
-        form = EditProfileForm(request.POST, request.FILES, instance=user)
+        form = EditProfileForm(request.POST, instance=user)
         if form.is_valid():
             form.save()
             return redirect('profile')
@@ -76,3 +76,21 @@ def edit_profile_view(request):
     return render(request, 'accounts/edit_profile.html', {
         'form': form
     })
+
+
+
+@login_required
+def update_avatar(request):
+    if request.method == 'POST' and request.FILES.get('avatar'):
+        request.user.avatar = request.FILES['avatar']
+        request.user.save()
+    return redirect('edit_profile')
+
+
+@login_required
+def remove_avatar(request):
+    if request.user.avatar:
+        request.user.avatar.delete(save=False)
+        request.user.avatar = None
+        request.user.save()
+    return redirect('edit_profile')

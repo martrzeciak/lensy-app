@@ -16,12 +16,6 @@ class CustomUser(AbstractUser):
         ('admin', 'admin')
     )
 
-    GENDER_CHOICES = (
-        ('male', 'Mężczyzna'),
-        ('female', 'Kobieta')
-    )
-
-    gender = models.CharField(max_length=20, choices=GENDER_CHOICES, blank=True, null=True)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='user')
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
     bio = models.TextField(blank=True)
@@ -37,16 +31,8 @@ class CustomUser(AbstractUser):
 
 
 class Follow(models.Model):
-    follower = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='following'
-    )
-    following = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='followers'
-    )
+    follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following')
+    following = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followers')
 
     class Meta:
         unique_together = ('follower', 'following')
