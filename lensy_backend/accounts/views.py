@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
 from .forms import EditProfileForm
@@ -55,11 +55,17 @@ def logout_view(request):
 
 
 @login_required
-def profile_view(request):
-    profile_user = request.user
+def profile_view(request, username=None):
+    if username:
+        profile_user = get_object_or_404(User, username=username)
+    else:
+        profile_user = request.user
+
     posts = profile_user.posts.all().order_by('-created_at')
 
-    return render(request, 'accounts/profile.html', {'profile_user': profile_user, 'posts': posts})
+    is_owner = request.user == profile_user
+
+    return render(request, 'accounts/profile.html', {'profile_user': profile_user, 'posts': posts, 'is_owner': is_owner})
 
 @login_required
 def edit_profile_view(request):
