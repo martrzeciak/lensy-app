@@ -1,13 +1,13 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Post, Like, Comment
+from .models import Post, Like, Comment, CommentLike
 
 # Stary
 @login_required
 def add_post(request):
     if request.method == 'POST' and request.FILES.get('image'):
         Post.objects.create(
-            user=request.user,
+            author=request.user,
             image=request.FILES['image'],
             description=request.POST.get('description', '')
         )
@@ -18,27 +18,47 @@ def add_post(request):
 def post_detail_view(request, post_id):
     post = get_object_or_404(Post, id=post_id)
 
-    previous_post = Post.objects.filter(
-        author=post.author,
-        created_at__lt=post.created_at
-    ).first()
+    # ====== POPRZEDNI / NASTĘPNY POST (TEGO SAMEGO AUTORA) ======
+    previous_post = (
+        Post.objects.filter(
+            author=post.author,
+            created_at__lt=post.created_at
+        )
+        .order_by('-created_at')
+        .first()
+    )
 
-    next_post = Post.objects.filter(
-        author=post.author,
-        created_at__gt=post.created_at
-    ).last()
+    next_post = (
+        Post.objects.filter(
+            author=post.author,
+            created_at__gt=post.created_at
+        )
+        .order_by('created_at')
+        .first()
+    )
 
+    # ====== CZY POST JEST POLUBIONY ======
     is_liked = Like.objects.filter(
         user=request.user,
         post=post
     ).exists()
 
+    # ====== 🔥 KOMENTARZE POLUBIONE PRZEZ USERA ======
+    liked_comment_ids = set(
+        CommentLike.objects.filter(
+            user=request.user,
+            comment__post=post
+        ).values_list('comment_id', flat=True)
+    )
+
     return render(request, 'posts/post_detail.html', {
         'post': post,
         'previous_post': previous_post,
         'next_post': next_post,
-        'is_liked': is_liked
+        'is_liked': is_liked,
+        'liked_comment_ids': liked_comment_ids,  # ⬅️ TO DODAJEMY
     })
+
 
 
 @login_required
@@ -69,3 +89,18 @@ def add_comment(request, post_id):
             )
 
     return redirect(post.get_absolute_url())
+
+
+@login_required
+def toggle_comment_like(request, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+
+    like, created = CommentLike.objects.get_or_create(
+        user=request.user,
+        comment=comment
+    )
+
+    if not created:
+        like.delete()
+
+    return redirect(comment.post.get_absolute_url())
