@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="card p-4">
+
+    <div class="position-relative mb-4">
+
+        <a href="javascript:history.back()"
+           class="btn btn-outline-secondary position-absolute top-0 start-0"
+           style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;">
+            ✕
+        </a>
+
+        <h4 class="text-center mb-0">
+            {{ title }}
+        </h4>
+
+    </div>
+
+    <hr class="mb-4">
+
+    <!-- ====== LISTA ====== -->
+    {% for user in users %}
+        <div class="d-flex align-items-center justify-content-between py-3 px-2">
+
+            <!-- LEWA -->
+            <div class="d-flex align-items-center gap-3 ps-2">
+                <a href="{% url 'user_profile' user.username %}">
+                    {% if user.avatar %}
+                        <img src="{{ user.avatar.url }}"
+                            class="rounded-circle" width="48" height="48">
+                    {% else %}
+                        <div class="rounded-circle bg-secondary" style="width:48px;height:48px;"></div>
+                    {% endif %}
+                </a>
+
+                <a href="{% url 'user_profile' user.username %}"
+                   class="text-decoration-none text-light fw-semibold">
+                    {{ user.username }}
+                </a>
+            </div>
+
+            <!-- PRAWA -->
+            <form method="post"
+                  action="{% url 'toggle_follow' user.username %}">
+                {% csrf_token %}
+                <button class="btn px-4
+                    {% if user.id in following_ids %}
+                        btn-outline-secondary
+                    {% else %}
+                        btn-primary
+                    {% endif %}">
+                    {% if user.id in following_ids %}
+                        Przestań obserwować
+                    {% else %}
+                        Obserwuj
+                    {% endif %}
+                </button>
+            </form>
+
+        </div>
+        <hr class="my-0">
+    {% empty %}
+        <p class="text-muted text-center">Brak użytkowników</p>
+    {% endfor %}
+
+</div>
+{% endblock %}

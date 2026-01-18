@@ -4,7 +4,7 @@
 {% block content %}
 <div class="card p-4">
 
-    <!-- ================= GÓRA PROFILU ================= -->
+    <!--  GÓRA PROFILU  -->
     <div class="d-flex gap-4 mb-4">
 
         <!-- AVATAR -->
@@ -31,44 +31,41 @@
 
             <!-- STATYSTYKI -->
             <div class="d-flex gap-4 text-light">
+
                 <div>
                     <strong>{{ posts.count }}</strong>
                     <small>postów</small>
                 </div>
+
                 <div>
-                    <strong>{{ profile_user.followers_count }}</strong>
-                    <small>obserwujących</small>
+                    <a href="{% url 'user_list' profile_user.username 'followers' %}"
+                    class="text-light text-decoration-none">
+                        <strong>{{ profile_user.followers_count }}</strong>
+                        <small>obserwujących</small>
+                    </a>
                 </div>
+
                 <div>
-                    <strong>{{ profile_user.following_count }}</strong>
-                    <small>obserwowanych</small>
+                    <a href="{% url 'user_list' profile_user.username 'following' %}"
+                    class="text-light text-decoration-none">
+                        <strong>{{ profile_user.following_count }}</strong>
+                        <small>obserwowanych</small>
+                    </a>
                 </div>
+
             </div>
 
         </div>
     </div>
 
-    <!-- ================= OPIS ================= -->
+    <!--  OPIS -->
     <div class="mb-4 text-light">
         {% if profile_user.bio %}
             {{ profile_user.bio }}
-        {% else %}
-            <span class="text-muted fst-italic">Brak opisu profilu</span>
         {% endif %}
     </div>
 
-    <!-- ================= PRZYCISKI ================= -->
-    <!-- <div class="d-flex gap-2 mb-4">
-        <a href="{% url 'edit_profile' %}"
-           class="btn btn-outline-light w-50">
-            Edytuj profil
-        </a>
-
-        <button id="showPostFormBtn"
-                class="btn btn-outline-primary w-50">
-            Dodaj zdjęcie
-        </button>
-    </div> -->
+    <!-- PRZYCISKI -->
     <div class="d-flex gap-2 mt-3">
         {% if is_owner %}
             <a href="{% url 'edit_profile' %}"
@@ -82,11 +79,20 @@
             </button>
         {% else %}
             <form method="post"
-                action="#"
+                action="{% url 'toggle_follow' profile_user.username %}"
                 class="w-100">
                 {% csrf_token %}
-                <button class="btn btn-primary w-100">
-                    Obserwuj
+                <button class="btn w-100
+                    {% if is_following %}
+                        btn-outline-secondary
+                    {% else %}
+                        btn-primary
+                    {% endif %}">
+                    {% if is_following %}
+                        Anuluj obserwowanie
+                    {% else %}
+                        Obserwuj
+                    {% endif %}
                 </button>
             </form>
         {% endif %}
@@ -94,7 +100,7 @@
 
     <hr>
 
-    <!-- ================= FORMULARZ POSTA ================= -->
+    <!-- FORMULARZ POSTA  -->
     <div class="mb-4">
 
         <form id="postForm"
@@ -130,7 +136,7 @@
 
     </div>
 
-    <!-- ================= POSTY ================= -->
+    <!--  POSTY  -->
     <div class="row g-2">
         {% for post in posts %}
             <div class="col-4">

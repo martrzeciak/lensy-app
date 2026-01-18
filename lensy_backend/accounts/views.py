@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
+from django.urls import reverse
 from .forms import EditProfileForm
 from .models import Follow
 
@@ -15,8 +16,10 @@ def register_view(request):
         email = request.POST.get("email")
         password = request.POST.get("password")
 
-        if User.objects.filter(email=email).exists() or User.objects.filter(username=username).exists():
-            error_message = "Użytkownik z tym email lub nazwą użytkownika już istnieje"
+        if User.objects.filter(username=username).exists():
+            error_message = "Ten nick jest już zajęty"
+        elif User.objects.filter(email=email).exists():
+            error_message = "Ten email jest już zajęty"
         else:
             User.objects.create_user(
                 username=username,
@@ -110,23 +113,26 @@ def remove_avatar(request):
         request.user.save()
     return redirect('edit_profile')
 
-
 @login_required
 def toggle_follow(request, username):
     target = get_object_or_404(User, username=username)
 
-    if target == request.user:
-        return redirect('profile')
+    if target != request.user:
+        follow, created = Follow.objects.get_or_create(
+            follower=request.user,
+            following=target
+        )
 
-    follow, created = Follow.objects.get_or_create(
-        follower=request.user,
-        following=target
-    )
+        if not created:
+            follow.delete()
 
-    if not created:
-        follow.delete()
+    next_url = request.POST.get('next') or request.META.get('HTTP_REFERER')
+
+    if next_url:
+        return redirect(next_url)
 
     return redirect('user_profile', username=username)
+
 
 
 @login_required

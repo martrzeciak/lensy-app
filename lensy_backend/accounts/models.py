@@ -9,6 +9,7 @@ User = settings.AUTH_USER_MODEL
 
 
 class CustomUser(AbstractUser):
+    username = models.CharField(max_length=150, unique=True)
     email = models.EmailField(unique=True)
 
     ROLE_CHOICES = (

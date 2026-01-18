@@ -1,8 +1,9 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Post, Like, Comment, CommentLike
+from accounts.models import Follow
 
-# Stary
+
 @login_required
 def add_post(request):
     if request.method == 'POST' and request.FILES.get('image'):
@@ -13,12 +14,10 @@ def add_post(request):
         )
     return redirect('profile')
 
-# Nowy
 @login_required
 def post_detail_view(request, post_id):
     post = get_object_or_404(Post, id=post_id)
 
-    # ====== POPRZEDNI / NASTĘPNY POST (TEGO SAMEGO AUTORA) ======
     previous_post = (
         Post.objects.filter(
             author=post.author,
@@ -37,13 +36,11 @@ def post_detail_view(request, post_id):
         .first()
     )
 
-    # ====== CZY POST JEST POLUBIONY ======
     is_liked = Like.objects.filter(
         user=request.user,
         post=post
     ).exists()
 
-    # ====== 🔥 KOMENTARZE POLUBIONE PRZEZ USERA ======
     liked_comment_ids = set(
         CommentLike.objects.filter(
             user=request.user,
@@ -51,12 +48,19 @@ def post_detail_view(request, post_id):
         ).values_list('comment_id', flat=True)
     )
 
+    following_ids = set(
+        Follow.objects.filter(
+            follower=request.user
+        ).values_list('following_id', flat=True)
+    )
+
     return render(request, 'posts/post_detail.html', {
         'post': post,
         'previous_post': previous_post,
         'next_post': next_post,
         'is_liked': is_liked,
-        'liked_comment_ids': liked_comment_ids,  # ⬅️ TO DODAJEMY
+        'liked_comment_ids': liked_comment_ids,
+        'following_ids': following_ids,
     })
 
 
