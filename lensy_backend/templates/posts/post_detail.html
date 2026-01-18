@@ -64,12 +64,9 @@
                     </form>
                     {% endif %}
 
-                    <!-- PRZYCISK X -->
-                    <!-- <a href="javascript:history.back()"
-                    class="btn btn-outline-secondary btn-sm"
-                    title="Zamknij">
+                    <a href="{{ request.META.HTTP_REFERER|default:'/' }}" class="btn btn-outline-secondary sm">
                         ✕
-                    </a> -->
+                    </a>
 
                 </div>
             </div>
