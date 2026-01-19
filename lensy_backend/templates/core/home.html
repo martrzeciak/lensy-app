@@ -52,7 +52,7 @@
                 </button>
             </form>
 
-            <a href="{% url 'post_detail' post.id %}?next={{ request.get_full_path|urlencode }}"
+            <a href="{% url 'post_detail' post.id %}?from={{ request.get_full_path|urlencode }}"
             class="btn btn-sm btn-outline-secondary">
                 💬 Skomentuj
             </a>

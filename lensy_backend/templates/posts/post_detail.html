@@ -78,10 +78,11 @@
                     <!-- <a href="{{ next_url|default:'/' }}" class="btn btn-outline-secondary sm">
                         ✕
                     </a> -->
-                    <a href="{{ next_url|default:request.META.HTTP_REFERER|default:'/' }}"
-                        class="btn btn-outline-secondary sm">
-                        ✕
-                    </a>
+                    {% if return_to %}
+                        <a href="{{ return_to }}" class="btn btn-outline-secondary sm">
+                            ✕
+                        </a>
+                    {% endif %}
 
 
                 </div>
@@ -124,9 +125,14 @@
                             </div>
 
                             <!-- PRAWA – LIKE -->
-                            <form method="post" action="{% url 'toggle_comment_like' comment.id %}">
+                            <form method="post"
+                                action="{% url 'toggle_comment_like' comment.id %}">
                                 {% csrf_token %}
-                                <input type="hidden" name="next" value="{{ next_url|default:request.path }}">
+
+                                {% if return_to %}
+                                    <input type="hidden" name="from" value="{{ return_to }}">
+                                {% endif %}
+
                                 <button class="btn btn-sm
                                     {% if comment.id in liked_comment_ids %}
                                         btn-danger
@@ -156,7 +162,9 @@
 
                 <form method="post" action="{% url 'toggle_like' post.id %}">
                     {% csrf_token %}
-                    <input type="hidden" name="next" value="{{ next_url|default:request.path }}">
+                    {% if return_to %}
+                        <input type="hidden" name="from" value="{{ return_to }}">
+                    {% endif %}
                     <button class="btn btn-sm
                         {% if is_liked %}
                             btn-danger
@@ -174,11 +182,11 @@
             <!--  DODAJ KOMENTARZ  -->
             <form method="post" action="{% url 'add_comment' post.id %}" class="d-flex gap-2">
                 {% csrf_token %}
-                <input type="hidden" name="next" value="{{ next_url }}">
-                <input type="text"
-                       name="content"
-                       class="form-control"
-                       placeholder="Dodaj komentarz...">
+                {% if return_to %}
+                    <input type="hidden" name="from" value="{{ return_to }}">
+                {% endif %}
+                <input type="text" name="content" class="form-control"
+                    placeholder="Dodaj komentarz...">
                 <button class="btn btn-primary">Dodaj</button>
             </form>
 

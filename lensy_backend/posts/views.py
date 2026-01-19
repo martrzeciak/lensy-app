@@ -22,18 +22,14 @@ def post_detail_view(request, post_id):
         Post.objects.filter(
             author=post.author,
             created_at__lt=post.created_at
-        )
-        .order_by('-created_at')
-        .first()
+        ).order_by('-created_at').first()
     )
 
     next_post = (
         Post.objects.filter(
             author=post.author,
             created_at__gt=post.created_at
-        )
-        .order_by('created_at')
-        .first()
+        ).order_by('created_at').first()
     )
 
     is_liked = Like.objects.filter(
@@ -54,7 +50,7 @@ def post_detail_view(request, post_id):
         ).values_list('following_id', flat=True)
     )
 
-    next_url = request.GET.get('next')
+    return_to = request.GET.get('from')
 
     return render(request, 'posts/post_detail.html', {
         'post': post,
@@ -63,8 +59,9 @@ def post_detail_view(request, post_id):
         'is_liked': is_liked,
         'liked_comment_ids': liked_comment_ids,
         'following_ids': following_ids,
-        'next_url': next_url,
+        'return_to': return_to,
     })
+
 
 
 @login_required
@@ -85,6 +82,7 @@ def toggle_like_home(request, post_id):
 @login_required
 def toggle_like(request, post_id):
     post = get_object_or_404(Post, id=post_id)
+
     like, created = Like.objects.get_or_create(
         user=request.user,
         post=post
@@ -92,6 +90,11 @@ def toggle_like(request, post_id):
 
     if not created:
         like.delete()
+
+    return_to = request.POST.get('from')
+
+    if return_to:
+        return redirect(f"{post.get_absolute_url()}?from={return_to}")
 
     return redirect(post.get_absolute_url())
 
@@ -109,6 +112,11 @@ def add_comment(request, post_id):
                 content=content
             )
 
+    return_to = request.POST.get('from')
+
+    if return_to:
+        return redirect(f"{post.get_absolute_url()}?from={return_to}")
+
     return redirect(post.get_absolute_url())
 
 
@@ -123,5 +131,12 @@ def toggle_comment_like(request, comment_id):
 
     if not created:
         like.delete()
+
+    return_to = request.POST.get('from')
+
+    if return_to:
+        return redirect(
+            f"{comment.post.get_absolute_url()}?from={return_to}"
+        )
 
     return redirect(comment.post.get_absolute_url())
