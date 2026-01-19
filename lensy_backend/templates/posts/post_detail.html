@@ -6,15 +6,25 @@
     <div class="row align-items-stretch">
 
         <!--  STRZAŁKA: STARSZY POST  -->
+        <!-- <div class="col-1 d-flex align-items-center justify-content-center">
+            {% if next_post %}
+                <a href="{{ next_post.get_absolute_url }}"
+                class="btn btn-outline-secondary"
+                title="Nowszy post">
+                    &lt;
+                </a>
+            {% endif %}
+        </div> -->
         <div class="col-1 d-flex align-items-center justify-content-center">
-        {% if next_post %}
-            <a href="{{ next_post.get_absolute_url }}"
-            class="btn btn-outline-secondary"
-            title="Nowszy post">
-                &lt;
-            </a>
-        {% endif %}
-    </div>
+            {% if not next_url and next_post %}
+                <a href="{{ next_post.get_absolute_url }}"
+                class="btn btn-outline-secondary"
+                title="Nowszy post">
+                    &lt;
+                </a>
+            {% endif %}
+        </div>
+
 
         <!--  ZDJĘCIE  -->
         <div class="col-md-6 bg-dark d-flex align-items-center justify-content-center rounded-start">
@@ -49,6 +59,7 @@
                     <form method="post"
                         action="{% url 'toggle_follow' post.author.username %}">
                         {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ next_url }}">
                         <button class="btn btn-sm
                             {% if post.author.id in following_ids %}
                                 btn-outline-secondary
@@ -64,7 +75,7 @@
                     </form>
                     {% endif %}
 
-                    <a href="{{ request.META.HTTP_REFERER|default:'/' }}" class="btn btn-outline-secondary sm">
+                    <a href="{{ next_url|default:'/' }}" class="btn btn-outline-secondary sm">
                         ✕
                     </a>
 
@@ -108,9 +119,9 @@
                             </div>
 
                             <!-- PRAWA – LIKE -->
-                            <form method="post"
-                                  action="{% url 'toggle_comment_like' comment.id %}">
+                            <form method="post" action="{% url 'toggle_comment_like' comment.id %}">
                                 {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ next_url|default:request.path }}">
                                 <button class="btn btn-sm
                                     {% if comment.id in liked_comment_ids %}
                                         btn-danger
@@ -140,6 +151,7 @@
 
                 <form method="post" action="{% url 'toggle_like' post.id %}">
                     {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ next_url|default:request.path }}">
                     <button class="btn btn-sm
                         {% if is_liked %}
                             btn-danger
@@ -155,10 +167,9 @@
             <hr class="my-1">
 
             <!--  DODAJ KOMENTARZ  -->
-            <form method="post"
-                  action="{% url 'add_comment' post.id %}"
-                  class="d-flex gap-2">
+            <form method="post" action="{% url 'add_comment' post.id %}" class="d-flex gap-2">
                 {% csrf_token %}
+                <input type="hidden" name="next" value="{{ next_url }}">
                 <input type="text"
                        name="content"
                        class="form-control"
@@ -169,8 +180,17 @@
         </div>
 
         <!--  STRZAŁKA: NOWSZY POST  -->
-        <div class="col-1 d-flex align-items-center justify-content-center">
+        <!-- <div class="col-1 d-flex align-items-center justify-content-center">
             {% if previous_post %}
+                <a href="{{ previous_post.get_absolute_url }}"
+                class="btn btn-outline-secondary"
+                title="Starszy post">
+                    &gt;
+                </a>
+            {% endif %}
+        </div> -->
+        <div class="col-1 d-flex align-items-center justify-content-center">
+            {% if not next_url and previous_post %}
                 <a href="{{ previous_post.get_absolute_url }}"
                 class="btn btn-outline-secondary"
                 title="Starszy post">

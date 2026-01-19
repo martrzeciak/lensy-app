@@ -54,6 +54,8 @@ def post_detail_view(request, post_id):
         ).values_list('following_id', flat=True)
     )
 
+    next_url = request.GET.get('next')
+
     return render(request, 'posts/post_detail.html', {
         'post': post,
         'previous_post': previous_post,
@@ -61,6 +63,7 @@ def post_detail_view(request, post_id):
         'is_liked': is_liked,
         'liked_comment_ids': liked_comment_ids,
         'following_ids': following_ids,
+        'next_url': next_url,
     })
 
 
@@ -76,7 +79,11 @@ def toggle_like(request, post_id):
     if not created:
         like.delete()
 
-    next_url = request.POST.get('next') or post.get_absolute_url()
+    next_url = request.POST.get('next')
+
+    if not next_url:
+        next_url = post.get_absolute_url()
+
     return redirect(next_url)
 
 
