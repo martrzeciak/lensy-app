@@ -10,11 +10,11 @@
     <div class="d-flex align-items-center justify-content-between mb-2">
 
         <div class="d-flex align-items-center gap-2">
-            <div class="avatar-sm">
+            <a href="{% url 'user_profile' post.author.username %}" class="avatar-sm">
                 {% if post.author.avatar %}
                     <img src="{{ post.author.avatar.url }}">
                 {% endif %}
-            </div>
+            </a>
 
             <strong>
                 <a href="{% url 'user_profile' post.author.username %}"
@@ -28,24 +28,13 @@
             </small>
         </div>
 
-        <form method="post"
-              action="{% url 'toggle_follow' post.author.username %}">
-            {% csrf_token %}
-            <button class="btn btn-sm btn-outline-secondary">
-                {% if post.author.is_followed %}
-                    Anuluj
-                {% else %}
-                    Obserwuj
-                {% endif %}
-            </button>
-        </form>
     </div>
 
     <!-- ===== ZDJĘCIE ===== -->
     <img src="{{ post.image.url }}" class="img-fluid rounded mb-2">
 
     <!-- ===== AKCJE ===== -->
-    <div class="d-flex gap-4 mb-2">
+    <!-- <div class="d-flex gap-4 mb-2">
         <div>
             ❤️ {{ post.likes_count }}
         </div>
@@ -57,7 +46,39 @@
                 {{ post.comments_count }}
             </a>
         </div>
+    </div> -->
+    <div class="d-flex align-items-center justify-content-between mb-2">
+
+        <!-- LEWA STRONA: PRZYCISKI -->
+        <div class="d-flex gap-2">
+
+            <form method="post" action="{% url 'toggle_like' post.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <button class="btn btn-sm
+                    {% if post.id in liked_post_ids %}
+                        btn-danger
+                    {% else %}
+                        btn-outline-danger
+                    {% endif %}">
+                    ❤️ Polub
+                </button>
+            </form>
+
+            <a href="{% url 'post_detail' post.id %}"
+            class="btn btn-sm btn-outline-secondary">
+                💬 Skomentuj
+            </a>
+
+        </div>
+
+        <!-- PRAWA STRONA: LICZNIKI -->
+        <span class="text-muted small">
+            ❤️ {{ post.likes.count }} · 💬 {{ post.comments.count }}
+        </span>
+
     </div>
+
 
     <!-- ===== OPIS ===== -->
     {% if post.description %}

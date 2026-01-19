@@ -76,7 +76,8 @@ def toggle_like(request, post_id):
     if not created:
         like.delete()
 
-    return redirect(post.get_absolute_url())
+    next_url = request.POST.get('next') or post.get_absolute_url()
+    return redirect(next_url)
 
 
 @login_required
