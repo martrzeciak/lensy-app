@@ -67,6 +67,20 @@ def post_detail_view(request, post_id):
     })
 
 
+@login_required
+def toggle_like_home(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+
+    like, created = Like.objects.get_or_create(
+        user=request.user,
+        post=post
+    )
+
+    if not created:
+        like.delete()
+
+    return redirect(request.POST.get('next', '/'))
+
 
 @login_required
 def toggle_like(request, post_id):
@@ -79,12 +93,7 @@ def toggle_like(request, post_id):
     if not created:
         like.delete()
 
-    next_url = request.POST.get('next')
-
-    if not next_url:
-        next_url = post.get_absolute_url()
-
-    return redirect(next_url)
+    return redirect(post.get_absolute_url())
 
 
 @login_required

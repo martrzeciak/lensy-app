@@ -39,7 +39,7 @@
         <!-- PRZYCISKI -->
         <div class="d-flex gap-2">
 
-            <form method="post" action="{% url 'toggle_like' post.id %}">
+            <form method="post" action="{% url 'toggle_like_home' post.id %}">
                 {% csrf_token %}
                 <input type="hidden" name="next" value="{{ request.get_full_path }}">
                 <button class="btn btn-sm

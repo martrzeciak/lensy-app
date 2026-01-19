@@ -6,7 +6,7 @@
     <div class="row align-items-stretch">
 
         <!--  STRZAŁKA: STARSZY POST  -->
-        <!-- <div class="col-1 d-flex align-items-center justify-content-center">
+        <div class="col-1 d-flex align-items-center justify-content-center">
             {% if next_post %}
                 <a href="{{ next_post.get_absolute_url }}"
                 class="btn btn-outline-secondary"
@@ -14,8 +14,8 @@
                     &lt;
                 </a>
             {% endif %}
-        </div> -->
-        <div class="col-1 d-flex align-items-center justify-content-center">
+        </div>
+        <!-- <div class="col-1 d-flex align-items-center justify-content-center">
             {% if not next_url and next_post %}
                 <a href="{{ next_post.get_absolute_url }}"
                 class="btn btn-outline-secondary"
@@ -23,7 +23,7 @@
                     &lt;
                 </a>
             {% endif %}
-        </div>
+        </div> -->
 
 
         <!--  ZDJĘCIE  -->
@@ -75,9 +75,14 @@
                     </form>
                     {% endif %}
 
-                    <a href="{{ next_url|default:'/' }}" class="btn btn-outline-secondary sm">
+                    <!-- <a href="{{ next_url|default:'/' }}" class="btn btn-outline-secondary sm">
+                        ✕
+                    </a> -->
+                    <a href="{{ next_url|default:request.META.HTTP_REFERER|default:'/' }}"
+                        class="btn btn-outline-secondary sm">
                         ✕
                     </a>
+
 
                 </div>
             </div>
@@ -180,7 +185,7 @@
         </div>
 
         <!--  STRZAŁKA: NOWSZY POST  -->
-        <!-- <div class="col-1 d-flex align-items-center justify-content-center">
+        <div class="col-1 d-flex align-items-center justify-content-center">
             {% if previous_post %}
                 <a href="{{ previous_post.get_absolute_url }}"
                 class="btn btn-outline-secondary"
@@ -188,8 +193,8 @@
                     &gt;
                 </a>
             {% endif %}
-        </div> -->
-        <div class="col-1 d-flex align-items-center justify-content-center">
+        </div>
+        <!-- <div class="col-1 d-flex align-items-center justify-content-center">
             {% if not next_url and previous_post %}
                 <a href="{{ previous_post.get_absolute_url }}"
                 class="btn btn-outline-secondary"
@@ -197,7 +202,7 @@
                     &gt;
                 </a>
             {% endif %}
-        </div>
+        </div> -->
 
     </div>
 
