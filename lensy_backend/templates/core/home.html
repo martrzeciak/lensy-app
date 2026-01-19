@@ -6,7 +6,7 @@
 {% for post in posts %}
 <div class="card mb-4 p-3">
 
-    <!-- ===== GÓRA POSTA ===== -->
+    <!-- GÓRA POSTA -->
     <div class="d-flex align-items-center justify-content-between mb-2">
 
         <div class="d-flex align-items-center gap-2">
@@ -30,31 +30,18 @@
 
     </div>
 
-    <!-- ===== ZDJĘCIE ===== -->
+    <!-- ZDJĘCIE -->
     <img src="{{ post.image.url }}" class="img-fluid rounded mb-2">
 
-    <!-- ===== AKCJE ===== -->
-    <!-- <div class="d-flex gap-4 mb-2">
-        <div>
-            ❤️ {{ post.likes_count }}
-        </div>
-
-        <div>
-            💬
-            <a href="{% url 'post_detail' post.id %}"
-               class="text-light text-decoration-none">
-                {{ post.comments_count }}
-            </a>
-        </div>
-    </div> -->
+    <!-- AKCJE -->
     <div class="d-flex align-items-center justify-content-between mb-2">
 
-        <!-- LEWA STRONA: PRZYCISKI -->
+        <!-- PRZYCISKI -->
         <div class="d-flex gap-2">
 
             <form method="post" action="{% url 'toggle_like' post.id %}">
                 {% csrf_token %}
-                <input type="hidden" name="next" value="{{ request.path }}">
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
                 <button class="btn btn-sm
                     {% if post.id in liked_post_ids %}
                         btn-danger
@@ -72,7 +59,7 @@
 
         </div>
 
-        <!-- PRAWA STRONA: LICZNIKI -->
+        <!-- LICZNIKI -->
         <span class="text-muted small">
             ❤️ {{ post.likes.count }} · 💬 {{ post.comments.count }}
         </span>
@@ -80,7 +67,7 @@
     </div>
 
 
-    <!-- ===== OPIS ===== -->
+    <!-- OPIS -->
     {% if post.description %}
         <p class="mb-0">{{ post.description }}</p>
     {% endif %}
@@ -89,5 +76,29 @@
 {% empty %}
 <p class="text-center text-muted">Brak postów</p>
 {% endfor %}
+
+{% if posts.has_other_pages %}
+<div class="d-flex justify-content-center mt-4 gap-2">
+
+    {% if posts.has_previous %}
+        <a href="?page={{ posts.previous_page_number }}"
+           class="btn btn-outline-secondary">
+            ← Poprzednie
+        </a>
+    {% endif %}
+
+    <span class="btn btn-outline-light disabled">
+        Strona {{ posts.number }} z {{ posts.paginator.num_pages }}
+    </span>
+
+    {% if posts.has_next %}
+        <a href="?page={{ posts.next_page_number }}"
+           class="btn btn-outline-secondary">
+            Następne →
+        </a>
+    {% endif %}
+
+</div>
+{% endif %}
 
 {% endblock %}

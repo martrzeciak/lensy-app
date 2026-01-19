@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.shortcuts import render
 from posts.models import Post, Like, Comment
 from accounts.models import Follow
@@ -12,12 +13,16 @@ def home_view(request):
         ).values_list('following_id', flat=True)
     )
 
-    posts = (
+    posts_qs = (
         Post.objects.filter(author_id__in=following_ids)
         .select_related('author')
         .prefetch_related('likes', 'comments')
         .order_by('-created_at')
     )
+
+    paginator = Paginator(posts_qs, 4)
+    page_number = request.GET.get('page')
+    posts = paginator.get_page(page_number)
 
     liked_post_ids = set(
         Like.objects.filter(
