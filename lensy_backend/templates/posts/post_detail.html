@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+{% load hashtag_extras %}
 
 <div class="container my-4">
 
@@ -80,15 +81,8 @@
 
             <!--  OPIS  -->
             {% if post.description %}
-                <p class="mb-1">{{ post.description }}</p>
+                <p class="mb-1">{{ post.description|link_hashtags }}</p>
             {% endif %}
-
-            <!--  HASHTAGI -->
-            <div class="mb-1">
-                {% for tag in post.hashtags.all %}
-                    <span class="text-primary">#{{ tag.name }}</span>
-                {% endfor %}
-            </div>
 
             <hr class="my-1">
 

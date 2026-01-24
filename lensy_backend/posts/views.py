@@ -1,6 +1,6 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Post, Like, Comment, CommentLike
+from .models import Post, Like, Comment, CommentLike, Hashtag
 from accounts.models import Follow
 
 
@@ -140,3 +140,20 @@ def toggle_comment_like(request, comment_id):
         )
 
     return redirect(comment.post.get_absolute_url())
+
+
+@login_required
+def hashtag_detail(request, name):
+    hashtag = get_object_or_404(Hashtag, name=name.lower())
+
+    posts = (
+        Post.objects
+        .filter(hashtags=hashtag)
+        .select_related('author')
+        .prefetch_related('hashtags')
+    )
+
+    return render(request, 'posts/hashtag_detail.html', {
+        'hashtag': hashtag,
+        'posts': posts
+    })
