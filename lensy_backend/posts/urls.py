@@ -3,7 +3,7 @@ from . import views
 
 urlpatterns = [
     path('add/', views.add_post, name='add_post'),
-    path('hashtag/<str:name>/', views.hashtag_detail, name='hashtag_detail'),
+    path('hashtag/<str:name>/', views.hashtag_feed_view, name='hashtag_feed'),
     path('posts/<int:post_id>/like/home/', views.toggle_like_home, name='toggle_like_home'),
     path('<int:post_id>/like/', views.toggle_like, name='toggle_like'),
     path('<int:post_id>/comment/', views.add_comment, name='add_comment'),

@@ -1,5 +1,6 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from .models import Post, Like, Comment, CommentLike, Hashtag
 from accounts.models import Follow
 
@@ -156,4 +157,34 @@ def hashtag_detail(request, name):
     return render(request, 'posts/hashtag_detail.html', {
         'hashtag': hashtag,
         'posts': posts
+    })
+
+
+@login_required
+def hashtag_feed_view(request, name):
+    hashtag = get_object_or_404(Hashtag, name=name.lower())
+
+    posts_qs = (
+        Post.objects
+        .filter(hashtags=hashtag)
+        .select_related('author')
+        .prefetch_related('hashtags', 'likes', 'comments')
+        .order_by('-created_at')
+    )
+
+    paginator = Paginator(posts_qs, 5) 
+    page_number = request.GET.get('page')
+    posts = paginator.get_page(page_number)
+
+    liked_post_ids = set(
+        Like.objects.filter(
+            user=request.user,
+            post__in=posts
+        ).values_list('post_id', flat=True)
+    )
+
+    return render(request, 'core/home.html', {
+        'posts': posts,
+        'liked_post_ids': liked_post_ids,
+        'active_hashtag': hashtag,
     })

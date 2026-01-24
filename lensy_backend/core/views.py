@@ -7,22 +7,19 @@ from accounts.models import Follow
 
 @login_required
 def home_view(request):
-    following_ids = set(
-        Follow.objects.filter(
-            follower=request.user
-        ).values_list('following_id', flat=True)
-    )
+    following_ids = Follow.objects.filter(
+        follower=request.user
+    ).values_list('following_id', flat=True)
 
-    posts_qs = (
-        Post.objects.filter(author_id__in=following_ids)
+    posts = (
+        Post.objects
+        .filter(
+            author__in=list(following_ids) + [request.user.id]
+        )
         .select_related('author')
-        .prefetch_related('likes', 'comments')
+        .prefetch_related('hashtags', 'likes', 'comments')
         .order_by('-created_at')
     )
-
-    paginator = Paginator(posts_qs, 4)
-    page_number = request.GET.get('page')
-    posts = paginator.get_page(page_number)
 
     liked_post_ids = set(
         Like.objects.filter(
@@ -35,4 +32,3 @@ def home_view(request):
         'posts': posts,
         'liked_post_ids': liked_post_ids,
     })
-
