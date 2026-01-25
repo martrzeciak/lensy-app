@@ -7,7 +7,8 @@ urlpatterns = [
     path('posts/<int:post_id>/like/home/', views.toggle_like_home, name='toggle_like_home'),
     path('<int:post_id>/like/', views.toggle_like, name='toggle_like'),
     path('<int:post_id>/comment/', views.add_comment, name='add_comment'),
+    path('<int:post_id>/delete/', views.delete_post_view, name='delete_post'),
     path('<int:post_id>/', views.post_detail_view, name='post_detail'),
     path('comment/<int:comment_id>/like/', views.toggle_comment_like, name='toggle_comment_like'),
-    path('comment/<int:pk>/delete/', views.delete_comment_view, name='delete_comment'),
+    path('comment/<int:pk>/delete/', views.delete_comment_view, name='delete_comment'),   
 ]

@@ -1,5 +1,6 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.urls import reverse
 from django.http import HttpResponseForbidden
 from django.core.paginator import Paginator
 from .models import Post, Like, Comment, CommentLike, Hashtag
@@ -187,3 +188,18 @@ def delete_comment_view(request, pk):
         comment.delete()
 
     return redirect('post_detail', post_id=post_id)
+
+
+
+@login_required
+def delete_post_view(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+
+    if post.author != request.user:
+        return HttpResponseForbidden()
+
+    if request.method == 'POST':
+        post.delete()
+        return redirect('profile')
+
+    return redirect(post.get_absolute_url())
