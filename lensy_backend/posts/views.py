@@ -144,23 +144,6 @@ def toggle_comment_like(request, comment_id):
 
 
 @login_required
-def hashtag_detail(request, name):
-    hashtag = get_object_or_404(Hashtag, name=name.lower())
-
-    posts = (
-        Post.objects
-        .filter(hashtags=hashtag)
-        .select_related('author')
-        .prefetch_related('hashtags')
-    )
-
-    return render(request, 'posts/hashtag_detail.html', {
-        'hashtag': hashtag,
-        'posts': posts
-    })
-
-
-@login_required
 def hashtag_feed_view(request, name):
     hashtag = get_object_or_404(Hashtag, name=name.lower())
 

@@ -13,21 +13,34 @@
 
 {% if user.is_authenticated %}
     <nav class="navbar navbar-dark mb-4">
-        <div class="container app-container d-flex justify-content-between">
+        <div class="container app-container d-flex justify-content-between align-items-center">
 
+            <!-- LEWA STRONA -->
             <a class="navbar-brand" href="{% url 'home' %}">Lensy</a>
 
-            <div>
+            <!-- PRAWA STRONA -->
+            <div class="d-flex align-items-center gap-3">
 
-                
-                <a href="/" class="text-light text-decoration-none">
-                    🔍
-                </a>
+                <!-- SEARCH -->
+                <form method="get" action="{% url 'search' %}" class="d-flex align-items-center gap-1">
+                    <input
+                        type="text"
+                        name="q"
+                        class="form-control form-control-sm"
+                        placeholder="Szukaj"
+                        value="{{ request.GET.q|default:'' }}">
 
-                <a href="{% url 'profile' %}" class="me-3 text-light text-decoration-none">
+                    <button type="submit" class="btn btn-link p-0 text-light">
+                        🔍
+                    </button>
+                </form>
+
+                <!-- PROFIL -->
+                <a href="{% url 'profile' %}" class="text-light text-decoration-none">
                     {{ user.username }}
                 </a>
 
+                <!-- LOGOUT -->
                 <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm">
                     Wyloguj
                 </a>
@@ -35,6 +48,16 @@
             </div>
         </div>
     </nav>
+{% endif %}
+
+{% if messages %}
+    <div class="container app-container mb-3">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} py-2">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
 {% endif %}
 
 {% if user.is_authenticated %}
