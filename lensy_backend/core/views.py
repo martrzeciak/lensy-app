@@ -16,13 +16,17 @@ def home_view(request):
         follower=request.user
     ).values_list('following_id', flat=True)
 
-    posts = (
+    posts_qs = (
         Post.objects
-        .filter(author__in=list(following_ids) + [request.user.id])
+        .filter(author__in=following_ids)
         .select_related('author')
         .prefetch_related('hashtags', 'likes', 'comments')
         .order_by('-created_at')
     )
+
+    paginator = Paginator(posts_qs, 5)
+    page_number = request.GET.get('page')
+    posts = paginator.get_page(page_number)
 
     liked_post_ids = set(
         Like.objects.filter(
