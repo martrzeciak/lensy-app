@@ -1,5 +1,6 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseForbidden
 from django.core.paginator import Paginator
 from .models import Post, Like, Comment, CommentLike, Hashtag
 from accounts.models import Follow
@@ -171,3 +172,18 @@ def hashtag_feed_view(request, name):
         'liked_post_ids': liked_post_ids,
         'active_hashtag': hashtag,
     })
+
+
+@login_required
+def delete_comment_view(request, pk):
+    comment = get_object_or_404(Comment, pk=pk)
+
+    if comment.user != request.user:
+        return HttpResponseForbidden()
+
+    post_id = comment.post.id
+
+    if request.method == 'POST':
+        comment.delete()
+
+    return redirect('post_detail', post_id=post_id)

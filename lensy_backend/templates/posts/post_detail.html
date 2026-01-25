@@ -109,7 +109,7 @@
                             </div>
 
                             <!-- PRAWA – LIKE -->
-                            <form method="post"
+                            <!-- <form method="post"
                                 action="{% url 'toggle_comment_like' comment.id %}">
                                 {% csrf_token %}
 
@@ -125,7 +125,39 @@
                                     {% endif %}">
                                     ❤️
                                 </button>
-                            </form>
+                            </form> -->
+                            <!-- PRAWA – LIKE + DELETE -->
+                            <div class="d-flex gap-1">
+
+                                {% if comment.user == request.user %}
+                                    <form method="post"
+                                        action="{% url 'delete_comment' comment.id %}">
+                                        {% csrf_token %}
+                                        <button class="btn btn-sm btn-outline-danger delete-x">
+                                            ✕
+                                        </button>
+                                    </form>
+                                {% endif %}
+
+                                <form method="post"
+                                    action="{% url 'toggle_comment_like' comment.id %}">
+                                    {% csrf_token %}
+
+                                    {% if return_to %}
+                                        <input type="hidden" name="from" value="{{ return_to }}">
+                                    {% endif %}
+
+                                    <button class="btn btn-sm
+                                        {% if comment.id in liked_comment_ids %}
+                                            btn-danger
+                                        {% else %}
+                                            btn-outline-danger
+                                        {% endif %}">
+                                        ❤️
+                                    </button>
+                                </form>
+
+                            </div>
 
                         </div>
                     {% endif %}
