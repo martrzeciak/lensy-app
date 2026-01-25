@@ -168,3 +168,14 @@ def user_list_view(request, username, list_type):
         'users': users,
         'following_ids': following_ids,
     })
+
+
+@login_required
+def delete_account_view(request):
+    if request.method == 'POST':
+        user = request.user
+        logout(request)
+        user.delete()
+        return redirect('login')
+
+    return redirect('edit_profile')

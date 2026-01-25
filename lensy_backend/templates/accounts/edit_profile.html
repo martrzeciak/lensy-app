@@ -6,68 +6,108 @@
 
     <h4 class="mb-4 text-center">Edytuj profil</h4>
 
-    <!-- ====== AVATAR ====== -->
-    <div class="row align-items-center mb-4">
+    <!-- AVATAR -->
 
-        <!-- PODGLĄD -->
-        <div class="col-md-3 text-center">
-            {% if request.user.avatar %}
-                <img src="{{ request.user.avatar.url }}"
-                     class="rounded-circle"
-                     width="120"
-                     height="120">
-            {% else %}
-                <div class="rounded-circle bg-secondary d-flex
-                            align-items-center justify-content-center"
-                     style="width:120px;height:120px;">
-                    <span class="text-light">Brak</span>
+
+    <!-- AVATAR + KONTO -->
+    <div class="row align-items-start mb-4">
+
+        <!-- AVATAR -->
+        <div class="col-md-6">
+
+            <div class="row align-items-center">
+
+                <!-- PODGLĄD -->
+                <div class="col-md-4 text-center">
+                    {% if request.user.avatar %}
+                        <img src="{{ request.user.avatar.url }}"
+                            class="rounded-circle"
+                            width="120"
+                            height="120">
+                    {% else %}
+                        <div class="rounded-circle bg-secondary d-flex
+                                    align-items-center justify-content-center"
+                            style="width:120px;height:120px;">
+                            <span class="text-light">Brak</span>
+                        </div>
+                    {% endif %}
                 </div>
-            {% endif %}
+
+                <!-- AKCJE -->
+                <div class="col-md-8">
+                    <label class="form-label fw-bold">Avatar</label>
+
+                    <!-- ZMIEŃ AVATAR -->
+                    <form id="avatarForm"
+                        method="post"
+                        action="{% url 'update_avatar' %}"
+                        enctype="multipart/form-data"
+                        class="d-inline">
+                        {% csrf_token %}
+
+                        <input type="file"
+                            name="avatar"
+                            id="avatarInput"
+                            accept="image/*"
+                            hidden
+                            onchange="document.getElementById('avatarForm').submit()">
+
+                        <button type="button"
+                                class="btn btn-sm btn-outline-primary"
+                                onclick="document.getElementById('avatarInput').click()">
+                            Zmień avatar
+                        </button>
+                    </form>
+
+                    <!-- USUŃ AVATAR -->
+                    {% if request.user.avatar %}
+                        <form method="post"
+                            action="{% url 'remove_avatar' %}"
+                            class="d-inline">
+                            {% csrf_token %}
+                            <button class="btn btn-sm btn-outline-danger">
+                                Usuń avatar
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+
+            </div>
         </div>
 
+        <!-- ====== KONTO ====== -->
+        <div class="col-md-6">
 
-        <!-- AKCJE -->
-        <div class="col-md-9">
+            <label class="form-label fw-bold me-2">Konto</label>
 
-            <label class="form-label fw-bold">Avatar</label>
+            <button id="toggleDeleteBtn"
+                    class="btn btn-sm btn-outline-danger mb-2">
+                Usuń
+            </button>
 
-            <!-- ZMIEŃ AVATAR -->
-            <form id="avatarForm"
-                  method="post"
-                  action="{% url 'update_avatar' %}"
-                  enctype="multipart/form-data"
-                  class="d-inline">
-                {% csrf_token %}
+            <div id="deleteConfirmBox"
+                style="display:none;"
+                class="border rounded p-3 mt-2">
 
-                <input type="file"
-                       name="avatar"
-                       id="avatarInput"
-                       accept="image/*"
-                       hidden
-                       onchange="document.getElementById('avatarForm').submit()">
+                <p class="text-danger mb-3">
+                    Czy jesteś pewny, że chcesz usunąć konto?
+                </p>
 
-                <button type="button"
-                        class="btn btn-sm btn-outline-primary"
-                        onclick="document.getElementById('avatarInput').click()">
-                    Zmień avatar
-                </button>
-            </form>
-
-            <!-- USUŃ AVATAR -->
-            {% if request.user.avatar %}
                 <form method="post"
-                      action="{% url 'remove_avatar' %}"
-                      class="d-inline">
+                    action="{% url 'delete_account' %}">
                     {% csrf_token %}
-                    <button class="btn btn-sm btn-outline-danger">
-                        Usuń avatar
+
+                    <button class="btn btn-danger btn-sm">
+                        Usuń konto
                     </button>
                 </form>
-            {% endif %}
+            </div>
+
         </div>
+
     </div>
 
-    <!-- ====== RESZTA FORMULARZA ====== -->
+    <!-- RESZTA FORMULARZA -->
     <form method="post">
         {% csrf_token %}
 
@@ -103,4 +143,22 @@
     </form>
 
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const toggleBtn = document.getElementById('toggleDeleteBtn');
+    const box = document.getElementById('deleteConfirmBox');
+
+    toggleBtn.addEventListener('click', () => {
+        const isVisible = box.style.display === 'block';
+
+        box.style.display = isVisible ? 'none' : 'block';
+        toggleBtn.textContent = isVisible ? 'Usuń' : 'Ukryj';
+    });
+
+});
+</script>
+
+
 {% endblock %}
