@@ -2,18 +2,16 @@
 {% block title %}Edytuj profil{% endblock %}
 
 {% block content %}
+<div class="container" style="max-width: 900px;">
 <div class="card p-4">
 
-    <h4 class="mb-4 text-center">Edytuj profil</h4>
-
-    <!-- AVATAR -->
-
+    <h3 class="mb-4 text-center" style="font-weight: 700;">Edytuj profil</h3>
 
     <!-- AVATAR + KONTO -->
-    <div class="row align-items-start mb-4">
+    <div class="row align-items-start mb-4 g-4">
 
         <!-- AVATAR -->
-        <div class="col-md-6">
+        <div class="col-md-6 mb-4 mb-md-0">
 
             <div class="row align-items-center">
 
@@ -22,13 +20,11 @@
                     {% if request.user.avatar %}
                         <img src="{{ request.user.avatar.url }}"
                             class="rounded-circle"
-                            width="120"
-                            height="120">
+                            style="width: 120px; height: 120px; object-fit: cover; border: 3px solid var(--border-color);">
                     {% else %}
-                        <div class="rounded-circle bg-secondary d-flex
-                                    align-items-center justify-content-center"
-                            style="width:120px;height:120px;">
-                            <span class="text-light">Brak</span>
+                        <div class="rounded-circle d-flex align-items-center justify-content-center"
+                            style="width: 120px; height: 120px; background: var(--bg-tertiary); border: 3px solid var(--border-color); font-size: 2.5rem; font-weight: 700;">
+                            {{ request.user.username|slice:":1"|upper }}
                         </div>
                     {% endif %}
                 </div>
@@ -37,39 +33,41 @@
                 <div class="col-md-8">
                     <label class="form-label fw-bold">Avatar</label>
 
-                    <!-- ZMIEŃ AVATAR -->
-                    <form id="avatarForm"
-                        method="post"
-                        action="{% url 'update_avatar' %}"
-                        enctype="multipart/form-data"
-                        class="d-inline">
-                        {% csrf_token %}
-
-                        <input type="file"
-                            name="avatar"
-                            id="avatarInput"
-                            accept="image/*"
-                            hidden
-                            onchange="document.getElementById('avatarForm').submit()">
-
-                        <button type="button"
-                                class="btn btn-sm btn-outline-primary"
-                                onclick="document.getElementById('avatarInput').click()">
-                            Zmień avatar
-                        </button>
-                    </form>
-
-                    <!-- USUŃ AVATAR -->
-                    {% if request.user.avatar %}
-                        <form method="post"
-                            action="{% url 'remove_avatar' %}"
+                    <div class="d-flex flex-column gap-2">
+                        <!-- ZMIEŃ AVATAR -->
+                        <form id="avatarForm"
+                            method="post"
+                            action="{% url 'update_avatar' %}"
+                            enctype="multipart/form-data"
                             class="d-inline">
                             {% csrf_token %}
-                            <button class="btn btn-sm btn-outline-danger">
-                                Usuń avatar
+
+                            <input type="file"
+                                name="avatar"
+                                id="avatarInput"
+                                accept="image/*"
+                                hidden
+                                onchange="document.getElementById('avatarForm').submit()">
+
+                            <button type="button"
+                                    class="btn btn-sm btn-primary"
+                                    onclick="document.getElementById('avatarInput').click()">
+                                🖼️ Zmień avatar
                             </button>
                         </form>
-                    {% endif %}
+
+                        <!-- USUŃ AVATAR -->
+                        {% if request.user.avatar %}
+                            <form method="post"
+                                action="{% url 'remove_avatar' %}"
+                                class="d-inline">
+                                {% csrf_token %}
+                                <button class="btn btn-sm btn-outline-danger">
+                                    🗑️ Usuń avatar
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
                 </div>
 
             </div>
@@ -78,27 +76,27 @@
         <!-- ====== KONTO ====== -->
         <div class="col-md-6">
 
-            <label class="form-label fw-bold me-2">Konto</label>
+            <label class="form-label fw-bold mb-3">Ustawienia konta</label>
 
             <button id="toggleDeleteBtn"
-                    class="btn btn-sm btn-outline-danger mb-2">
-                Usuń
+                    class="btn btn-sm btn-outline-danger w-100">
+                ⚠️ Usuń konto
             </button>
 
             <div id="deleteConfirmBox"
-                style="display:none;"
-                class="border rounded p-3 mt-2">
+                class="border rounded p-3 mt-3"
+                style="display:none; border: 1px solid var(--color-danger) !important; background: rgba(239, 68, 68, 0.1);">
 
-                <p class="text-danger mb-3">
-                    Czy jesteś pewny, że chcesz usunąć konto?
+                <p class="text-danger mb-3 fw-semibold">
+                    ⚠️ Czy jesteś pewny, że chcesz usunąć konto?
                 </p>
 
                 <form method="post"
                     action="{% url 'delete_account' %}">
                     {% csrf_token %}
 
-                    <button class="btn btn-danger btn-sm">
-                        Usuń konto
+                    <button class="btn btn-danger btn-sm w-100">
+                        Potwierdź usunięcie konta
                     </button>
                 </form>
             </div>
@@ -107,41 +105,44 @@
 
     </div>
 
+    <hr class="mb-4">
+
     <!-- RESZTA FORMULARZA -->
     <form method="post">
         {% csrf_token %}
 
         <div class="row mb-3">
             <div class="col-md-4">
-                {{ form.username.label_tag }}
+                <label class="form-label">Nazwa użytkownika</label>
                 {{ form.username }}
             </div>
             <div class="col-md-4">
-                {{ form.first_name.label_tag }}
+                <label class="form-label">Imię</label>
                 {{ form.first_name }}
             </div>
             <div class="col-md-4">
-                {{ form.last_name.label_tag }}
+                <label class="form-label">Nazwisko</label>
                 {{ form.last_name }}
             </div>
         </div>
 
         <div class="mb-4">
-            {{ form.bio.label_tag }}
+            <label class="form-label">Bio</label>
             {{ form.bio }}
         </div>
 
-        <div class="d-flex gap-2">
-            <button class="btn btn-success w-50">
-                Zapisz
+        <div class="d-flex gap-2 flex-column flex-md-row">
+            <button class="btn btn-success flex-fill">
+                ✔️ Zapisz zmiany
             </button>
             <a href="{% url 'profile' %}"
-               class="btn btn-outline-secondary w-50">
+               class="btn btn-outline-secondary flex-fill">
                 Anuluj
             </a>
         </div>
     </form>
 
+</div>
 </div>
 
 <script>
@@ -150,12 +151,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const toggleBtn = document.getElementById('toggleDeleteBtn');
     const box = document.getElementById('deleteConfirmBox');
 
-    toggleBtn.addEventListener('click', () => {
-        const isVisible = box.style.display === 'block';
+    if (toggleBtn && box) {
+        toggleBtn.addEventListener('click', () => {
+            const isVisible = box.style.display === 'block';
 
-        box.style.display = isVisible ? 'none' : 'block';
-        toggleBtn.textContent = isVisible ? 'Usuń' : 'Ukryj';
-    });
+            box.style.display = isVisible ? 'none' : 'block';
+            toggleBtn.innerHTML = isVisible ? '⚠️ Usuń konto' : 'Ukryj';
+        });
+    }
 
 });
 </script>

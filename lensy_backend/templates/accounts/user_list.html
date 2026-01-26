@@ -2,19 +2,19 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-<div class="card p-4">
+<div class="card p-4 shadow-lg">
 
     <div class="position-relative mb-4">
 
         <a href="javascript:history.back()"
            class="btn btn-outline-secondary position-absolute top-0 start-0"
-           style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;">
-            ✕
+           style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: var(--border-radius-full);">
+            ←
         </a>
 
-        <h4 class="text-center mb-0">
+        <h3 class="text-center mb-0" style="font-weight: 700;">
             {{ title }}
-        </h4>
+        </h3>
 
     </div>
 
@@ -22,16 +22,17 @@
 
     <!-- ====== LISTA ====== -->
     {% for user in users %}
-        <div class="d-flex align-items-center justify-content-between py-3 px-2">
+        <div class="user-list-item d-flex align-items-center justify-content-between py-3 px-3 mb-2">
 
             <!-- LEWA -->
-            <div class="d-flex align-items-center gap-3 ps-2">
-                <a href="{% url 'user_profile' user.username %}">
+            <div class="d-flex align-items-center gap-3">
+                <a href="{% url 'user_profile' user.username %}" class="avatar-sm">
                     {% if user.avatar %}
-                        <img src="{{ user.avatar.url }}"
-                            class="rounded-circle" width="48" height="48">
+                        <img src="{{ user.avatar.url }}" alt="{{ user.username }}">
                     {% else %}
-                        <div class="rounded-circle bg-secondary" style="width:48px;height:48px;"></div>
+                        <div style="width: 100%; height: 100%; background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center; font-weight: 600; border-radius: var(--border-radius-full);">
+                            {{ user.username|slice:":1"|upper }}
+                        </div>
                     {% endif %}
                 </a>
 
@@ -45,24 +46,25 @@
             <form method="post"
                   action="{% url 'toggle_follow' user.username %}">
                 {% csrf_token %}
-                <button class="btn px-4
+                <button class="btn btn-sm
                     {% if user.id in following_ids %}
                         btn-outline-secondary
                     {% else %}
                         btn-primary
-                    {% endif %}">
+                    {% endif %}" style="min-width: 140px;">
                     {% if user.id in following_ids %}
                         Przestań obserwować
                     {% else %}
-                        Obserwuj
+                        👍 Obserwuj
                     {% endif %}
                 </button>
             </form>
 
         </div>
-        <hr class="my-0">
     {% empty %}
-        <p class="text-muted text-center">Brak użytkowników</p>
+        <div class="card p-5">
+            <p class="text-muted text-center mb-0">👥 Brak użytkowników</p>
+        </div>
     {% endfor %}
 
 </div>

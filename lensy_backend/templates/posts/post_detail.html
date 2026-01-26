@@ -4,43 +4,52 @@
 
 <div class="container my-4">
 
-    <div class="row align-items-stretch">
+    <div class="row g-4 align-items-stretch">
 
         <!--  STRZAŁKA: STARSZY POST  -->
-        <div class="col-1 d-flex align-items-center justify-content-center">
+        <div class="col-auto d-flex align-items-center justify-content-center" style="max-width: 60px;">
             {% if next_post %}
                 <a href="{{ next_post.get_absolute_url }}"
                 class="btn btn-outline-secondary"
+                style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;"
                 title="Nowszy post">
-                    &lt;
+                    ‹
                 </a>
             {% endif %}
         </div>
 
         <!--  ZDJĘCIE  -->
-        <div class="col-md-6 bg-dark d-flex align-items-center justify-content-center rounded-start">
-            <img src="{{ post.image.url }}" class="img-fluid">
+        <div class="col-md-5 d-flex align-items-center justify-content-center" style="background: var(--bg-secondary); border-radius: var(--border-radius-lg); overflow: hidden; min-height: 400px;">
+            <img src="{{ post.image.url }}" class="img-fluid" style="max-height: 80vh; width: auto; max-width: 100%; object-fit: contain;" alt="Post">
         </div>
 
         <!--  PRAWA SEKCJA  -->
-        <div class="col-md-4 d-flex flex-column p-3 border">
+        <div class="col-md-5">
+            <div class="card h-100 d-flex flex-column p-4">
 
             <!--  GÓRA  -->
-            <div class="d-flex align-items-center justify-content-between mb-2">
+            <div class="d-flex align-items-center justify-content-between mb-3 pb-3" style="border-bottom: 1px solid var(--border-color);">
 
                 <!-- LEWA: AVATAR + USER -->
-                <div class="d-flex align-items-center gap-2">
-                    {% if post.author.avatar %}
-                        <a href="{% url 'user_profile' post.author.username %}">
-                            <img src="{{ post.author.avatar.url }}"
-                                class="rounded-circle"
-                                width="40" height="40">
-                        </a>
-                    {% endif %}
-                    <a href="{% url 'user_profile' post.author.username %}"
-                    class="text-decoration-none text-light">
-                        <strong>{{ post.author.username }}</strong>
+                <div class="d-flex align-items-center gap-3">
+                    <a href="{% url 'user_profile' post.author.username %}" class="avatar-sm">
+                        {% if post.author.avatar %}
+                            <img src="{{ post.author.avatar.url }}" alt="{{ post.author.username }}">
+                        {% else %}
+                            <div style="width: 100%; height: 100%; background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center; font-weight: 600;">
+                                {{ post.author.username|slice:":1"|upper }}
+                            </div>
+                        {% endif %}
                     </a>
+                    <div>
+                        <a href="{% url 'user_profile' post.author.username %}"
+                        class="text-decoration-none text-light fw-semibold">
+                            {{ post.author.username }}
+                        </a>
+                        <div class="text-muted small">
+                            {{ post.created_at|date:"d.m.Y H:i" }}
+                        </div>
+                    </div>
                 </div>
 
                 <!-- PRAWA: FOLLOW + Usuń + X -->
@@ -55,10 +64,10 @@
                             {% if post.author.id in following_ids %}
                                 btn-outline-secondary
                             {% else %}
-                                btn-outline-primary
+                                btn-primary
                             {% endif %}">
                             {% if post.author.id in following_ids %}
-                                Anuluj
+                                Przestań
                             {% else %}
                                 Obserwuj
                             {% endif %}
@@ -71,14 +80,14 @@
                             action="{% url 'delete_post' post.id %}"
                             onsubmit="return confirm('Czy na pewno chcesz usunąć ten post?');">
                             {% csrf_token %}
-                            <button class="btn btn-sm btn-outline-danger delete-x">
-                                Usuń post
+                            <button class="btn btn-sm btn-outline-danger">
+                                🗑️
                             </button>
                         </form>
                     {% endif %}
 
                     {% if return_to %}
-                        <a href="{{ return_to }}" class="btn btn-outline-secondary sm">
+                        <a href="{{ return_to }}" class="btn btn-sm btn-outline-secondary" style="width: 32px !important; height: 32px !important; min-width: 32px !important; max-width: 32px !important; display: flex; align-items: center; justify-content: center; padding: 0 !important;">
                             ✕
                         </a>
                     {% endif %}
@@ -89,30 +98,30 @@
 
             <!--  OPIS  -->
             {% if post.description %}
-                <p class="mb-1">{{ post.description|link_hashtags }}</p>
+                <div class="mb-3 p-3" style="background: var(--bg-tertiary); border-radius: var(--border-radius-md); word-wrap: break-word; overflow-wrap: break-word;">
+                    <p class="mb-0" style="white-space: pre-wrap;">{{ post.description|link_hashtags }}</p>
+                </div>
             {% endif %}
 
-            <hr class="my-1">
-
             <!--  KOMENTARZE  -->
-            <div class="flex-grow-1 overflow-auto" style="max-height: 55vh;">
+            <div class="flex-grow-1 overflow-auto mb-3" style="max-height: 45vh;">
 
                 {% for comment in post.comments.all %}
                     {% if not comment.parent %}
-                        <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="d-flex justify-content-between align-items-start mb-3 p-2" style="background: var(--bg-secondary); border-radius: var(--border-radius-md);">
 
                             <!-- LEWA -->
-                            <div style="max-width:85%; word-wrap:break-word;">
-                                <div>
-                                    <a href="{% url 'user_profile' comment.user.username %}" class="text-decoration-none text-light fw-bold">
+                            <div style="flex: 1; min-width: 0; word-wrap: break-word; overflow-wrap: break-word;">
+                                <div class="mb-1" style="word-break: break-word;">
+                                    <a href="{% url 'user_profile' comment.user.username %}" class="text-decoration-none text-light fw-semibold">
                                         {{ comment.user.username }}
                                     </a>
-                                    {{ comment.content }}
+                                    <span class="text-secondary ms-2">{{ comment.content }}</span>
                                 </div>
 
                                 <div class="text-muted small">
                                     {{ comment.created_at|date:"d.m.Y H:i" }}
-                                    · ❤️ {{ comment.likes.count }}
+                                    <span class="ms-2">❤️ {{ comment.likes.count }}</span>
                                 </div>
                             </div>
 
@@ -123,7 +132,7 @@
                                     <form method="post"
                                         action="{% url 'delete_comment' comment.id %}">
                                         {% csrf_token %}
-                                        <button class="btn btn-sm btn-outline-danger delete-x">
+                                        <button class="btn btn-sm btn-outline-danger" style="width: 28px; height: 28px; padding: 0; display: flex; align-items: center; justify-content: center;">
                                             ✕
                                         </button>
                                     </form>
@@ -142,7 +151,7 @@
                                             btn-danger
                                         {% else %}
                                             btn-outline-danger
-                                        {% endif %}">
+                                        {% endif %}" style="min-width: 36px;">
                                         ❤️
                                     </button>
                                 </form>
@@ -152,19 +161,21 @@
                         </div>
                     {% endif %}
                 {% empty %}
-                    <p class="text-muted">Brak komentarzy</p>
+                    <div class="text-center text-muted p-4">
+                        <p class="mb-0">💬 Brak komentarzy</p>
+                    </div>
                 {% endfor %}
 
             </div>
 
             <!--  INFO POSTA + LIKE  -->
-            <div class="d-flex align-items-center justify-content-between mt-1 mb-1">
+            <div class="d-flex align-items-center justify-content-between py-3" style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);">
 
-                <span class="text-muted small">
-                    ❤️ {{ post.likes.count }}
-                    · 💬 {{ post.comments.count }}
-                    · {{ post.created_at|date:"d.m.Y H:i" }}
-                </span>
+                <div class="text-muted small">
+                    <span>❤️ {{ post.likes.count }}</span>
+                    <span class="mx-2">·</span>
+                    <span>💬 {{ post.comments.count }}</span>
+                </div>
 
                 <form method="post" action="{% url 'toggle_like' post.id %}">
                     {% csrf_token %}
@@ -177,34 +188,34 @@
                         {% else %}
                             btn-outline-danger
                         {% endif %}">
-                        ❤️
+                        Polub
                     </button>
                 </form>
 
             </div>
 
-            <hr class="my-1">
-
             <!--  DODAJ KOMENTARZ  -->
-            <form method="post" action="{% url 'add_comment' post.id %}" class="d-flex gap-2">
+            <form method="post" action="{% url 'add_comment' post.id %}" class="d-flex gap-2 mt-3">
                 {% csrf_token %}
                 {% if return_to %}
                     <input type="hidden" name="from" value="{{ return_to }}">
                 {% endif %}
                 <input type="text" name="content" class="form-control"
-                    placeholder="Dodaj komentarz...">
-                <button class="btn btn-primary">Dodaj</button>
+                    placeholder="Dodaj komentarz..." required>
+                <button class="btn btn-primary">📤</button>
             </form>
 
         </div>
+        </div>
 
         <!--  STRZAŁKA: NOWSZY POST  -->
-        <div class="col-1 d-flex align-items-center justify-content-center">
+        <div class="col-auto d-flex align-items-center justify-content-center" style="max-width: 60px;">
             {% if previous_post %}
                 <a href="{{ previous_post.get_absolute_url }}"
                 class="btn btn-outline-secondary"
+                style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;"
                 title="Starszy post">
-                    &gt;
+                    ›
                 </a>
             {% endif %}
         </div>
